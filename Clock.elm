@@ -5,7 +5,6 @@ import Html exposing (..)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, second)
-import Time.DateTime exposing (..)
 
 
 
@@ -31,7 +30,6 @@ type alias Model = Time
 init : (Model, Cmd Msg)
 init =
   (0, Cmd.none)
---   (Model (Time 0, Time 0), Cmd.none)
 
 
 
@@ -47,7 +45,6 @@ update msg model =
   case msg of
     Tick newTime ->
       (newTime, Cmd.none)
-    -- Tock newTime 
 
 
 
@@ -57,7 +54,6 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Time.every Time.second Tick
---   Time.every minute Tock
 
 
 
@@ -67,24 +63,17 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   let
-    now =
-      epoch
-      |> addMilliseconds (floor model)
-
-    stringTurns = 
-      toString (turns (toFloat (Time.DateTime.minute now)))
-
     angleMin = 
-      degrees (toFloat (Time.DateTime.minute now)) * 6
+      turns ((Time.inHours model) - 0.25)
 
     handXMin =
-      toString (50 + 40 * cos (angleMin - (degrees 90)))
+      toString (50 + 40 * cos (angleMin))
 
     handYMin =
-      toString (50 + 40 * sin (angleMin - (degrees 90)))
+      toString (50 + 40 * sin (angleMin))
 
     angle =
-      turns (Time.inMinutes model)
+      turns ((Time.inMinutes model) - 0.25)
 
     handX =
       toString (50 + 40 * cos angle)
@@ -92,12 +81,9 @@ view model =
     handY =
       toString (50 + 40 * sin angle)
   in
-    div [] [
-        Html.text (toString (angleMin))
-        ,svg [ viewBox "0 0 100 100", width "300px" ]
+    svg [ viewBox "0 0 100 100", width "300px" ]
       [ circle [ cx "50", cy "50", r "45", fill "#0B79CE" ] []
       , line [ x1 "50", y1 "50", x2 handX, y2 handY, stroke "#023963" ] []
       , line [ x1 "50", y1 "50", x2 handXMin, y2 handYMin, stroke "#023963" ] []
       ]
-    ]
     
